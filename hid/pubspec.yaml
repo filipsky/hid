@@ -2,6 +2,7 @@ name: hid
 description: A multi-platform plugin which allows an application to interface with USB HID-Class devices on Linux, Windows, Android, and macOS.
 version: 0.1.7
 repository: https://github.com/rustui/hid/tree/main/hid
+publish_to: none
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -15,27 +16,27 @@ dependencies:
     version: ^0.0.9
     git:
       url: https://github.com/filipsky/hid
-      path: hid
+      path: hid_platform_interface
   hid_windows: 
     version: ^0.1.1
     git:
       url: https://github.com/filipsky/hid
-      path: hid
+      path: hid_windows
   hid_macos: 
     version: ^0.1.2
     git:
       url: https://github.com/filipsky/hid
-      path: hid
+      path: hid_macos
   hid_linux: 
     version: ^0.1.1
     git:
       url: https://github.com/filipsky/hid
-      path: hid
+      path: hid_linux
   hid_android: 
     version: ^0.1.1
     git:
       url: https://github.com/filipsky/hid
-      path: hid
+      path: hid_android
 
 dev_dependencies:
   flutter_test:
