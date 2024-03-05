@@ -26,8 +26,10 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
     private val gson = Gson()
     private var connection: UsbDeviceConnection? = null
     private var device: UsbDevice? = null
-    private var interfaceIndex: Int? = null
-    private var endpointIndex: Int? = null
+    private var readInterfaceIndex: Int? = null
+    private var readEndpointIndex: Int? = null
+    private var writeInterfaceIndex: Int? = null
+    private var writeEndpointIndex: Int? = null
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "hid_android")
@@ -69,13 +71,17 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
             "open" -> {
                 device = usbManager.deviceList[call.argument("deviceName")]!!
                 connection = usbManager.openDevice(device)
-                (interfaceIndex, endpointIndex) = getReadIndices(device!!)!!
-                result.success(
-                    connection!!.claimInterface(
-                        device!!.getInterface(interfaceIndex!!),
-                        true
-                    )
-                )
+                var pair = getReadIndices(device!!)!!
+                readInterfaceIndex = pair.first
+                readEndpointIndex = pair.second
+                pair = getWriteIndices(device!!)!!
+                writeInterfaceIndex = pair.first
+                writeEndpointIndex = pair.second
+
+                val success : Boolean = connection!!.claimInterface(device!!.getInterface(readInterfaceIndex!!), true) &&
+                 ((readInterfaceIndex == writeInterfaceIndex) || connection!!.claimInterface(device!!.getInterface(writeInterfaceIndex!!), true))
+
+                result.success( success )
             }
             "read" -> {
                 if (connection != null) {
@@ -85,12 +91,30 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                         kotlin.run {
                             val array = ByteArray(length)
                             connection!!.bulkTransfer(
-                                device!!.getInterface(i).getEndpoint(j),
+                                device!!.getInterface(readInterfaceIndex!!).getEndpoint(readEndpointIndex!!),
                                 array,
                                 length,
                                 duration
                             )
                             result.success(array.map { it.toUByte().toInt() })
+                        }
+                    }.start()
+                } else {
+                    result.error("error", "error", "error")
+                }
+            }
+            "write" -> {
+                if (connection != null) {
+                    val bytes: ByteArray = call.argument("bytes")!!
+                    Thread {
+                        kotlin.run {
+                            connection!!.bulkTransfer(
+                                device!!.getInterface(writeInterfaceIndex!!).getEndpoint(writeEndpointIndex!!),
+                                bytes,
+                                bytes.size,
+                                1000
+                            )
+                            result.success(0)
                         }
                     }.start()
                 } else {
@@ -117,6 +141,19 @@ fun getReadIndices(device: UsbDevice): Pair<Int, Int>? {
         for (j in 0 until inter.endpointCount) {
             val endpoint = inter.getEndpoint(j)
             if (endpoint.type == UsbConstants.USB_ENDPOINT_XFER_INT && endpoint.direction == UsbConstants.USB_DIR_IN) {
+                return Pair(i, j)
+            }
+        }
+    }
+    return null
+}
+
+fun getWriteIndices(device: UsbDevice): Pair<Int, Int>? {
+    for (i in 0 until device.interfaceCount) {
+        val inter = device.getInterface(i)
+        for (j in 0 until inter.endpointCount) {
+            val endpoint = inter.getEndpoint(j)
+            if (endpoint.type == UsbConstants.USB_ENDPOINT_XFER_INT && endpoint.direction == UsbConstants.USB_DIR_OUT) {
                 return Pair(i, j)
             }
         }

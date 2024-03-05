@@ -30,4 +30,12 @@ abstract class Device {
   Future<void> write(Uint8List bytes) {
     throw UnimplementedError();
   }
+
+  Future<void> getFeature(Uint8List bytes) {
+    throw UnimplementedError();
+  }
+
+  Future<void> setFeature(Uint8List bytes) {
+    throw UnimplementedError();
+  }
 }

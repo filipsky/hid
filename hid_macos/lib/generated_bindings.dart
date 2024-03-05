@@ -5,17 +5,13 @@ import 'dart:ffi' as ffi;
 
 class Api {
   /// Holds the symbol lookup function.
-  final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-      _lookup;
+  final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
   Api(ffi.DynamicLibrary dynamicLibrary) : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
-  Api.fromLookup(
-      ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
-          lookup)
-      : _lookup = lookup;
+  Api.fromLookup(ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup) : _lookup = lookup;
 
   /// @brief Initialize the HIDAPI library.
   ///
@@ -34,8 +30,7 @@ class Api {
     return _init();
   }
 
-  late final _initPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('hid_init');
+  late final _initPtr = _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('hid_init');
   late final _init = _initPtr.asFunction<int Function()>();
 
   /// @brief Finalize the HIDAPI library.
@@ -52,8 +47,7 @@ class Api {
     return _exit();
   }
 
-  late final _exitPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('hid_exit');
+  late final _exitPtr = _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('hid_exit');
   late final _exit = _exitPtr.asFunction<int Function()>();
 
   /// @brief Enumerate the HID Devices.
@@ -86,12 +80,8 @@ class Api {
     );
   }
 
-  late final _enumeratePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<hid_device_info> Function(
-              ffi.Uint16, ffi.Uint16)>>('hid_enumerate');
-  late final _enumerate = _enumeratePtr
-      .asFunction<ffi.Pointer<hid_device_info> Function(int, int)>();
+  late final _enumeratePtr = _lookup<ffi.NativeFunction<ffi.Pointer<hid_device_info> Function(ffi.Uint16, ffi.Uint16)>>('hid_enumerate');
+  late final _enumerate = _enumeratePtr.asFunction<ffi.Pointer<hid_device_info> Function(int, int)>();
 
   /// @brief Free an enumeration Linked List
   ///
@@ -108,11 +98,8 @@ class Api {
     );
   }
 
-  late final _free_enumerationPtr = _lookup<
-          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<hid_device_info>)>>(
-      'hid_free_enumeration');
-  late final _free_enumeration = _free_enumerationPtr
-      .asFunction<void Function(ffi.Pointer<hid_device_info>)>();
+  late final _free_enumerationPtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<hid_device_info>)>>('hid_free_enumeration');
+  late final _free_enumeration = _free_enumerationPtr.asFunction<void Function(ffi.Pointer<hid_device_info>)>();
 
   /// @brief Open a HID device using a Vendor ID (VID), Product ID
   /// (PID) and optionally a serial number.
@@ -143,12 +130,8 @@ class Api {
     );
   }
 
-  late final _openPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<hid_device> Function(
-              ffi.Uint16, ffi.Uint16, ffi.Pointer<wchar_t>)>>('hid_open');
-  late final _open = _openPtr.asFunction<
-      ffi.Pointer<hid_device> Function(int, int, ffi.Pointer<wchar_t>)>();
+  late final _openPtr = _lookup<ffi.NativeFunction<ffi.Pointer<hid_device> Function(ffi.Uint16, ffi.Uint16, ffi.Pointer<wchar_t>)>>('hid_open');
+  late final _open = _openPtr.asFunction<ffi.Pointer<hid_device> Function(int, int, ffi.Pointer<wchar_t>)>();
 
   /// @brief Open a HID device by its path name.
   ///
@@ -172,12 +155,8 @@ class Api {
     );
   }
 
-  late final _open_pathPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<hid_device> Function(
-              ffi.Pointer<ffi.Int8>)>>('hid_open_path');
-  late final _open_path = _open_pathPtr
-      .asFunction<ffi.Pointer<hid_device> Function(ffi.Pointer<ffi.Int8>)>();
+  late final _open_pathPtr = _lookup<ffi.NativeFunction<ffi.Pointer<hid_device> Function(ffi.Pointer<ffi.Int8>)>>('hid_open_path');
+  late final _open_path = _open_pathPtr.asFunction<ffi.Pointer<hid_device> Function(ffi.Pointer<ffi.Int8>)>();
 
   /// @brief Write an Output report to a HID device.
   ///
@@ -218,12 +197,8 @@ class Api {
     );
   }
 
-  late final _writePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>,
-              size_t)>>('hid_write');
-  late final _write = _writePtr.asFunction<
-      int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int)>();
+  late final _writePtr = _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, size_t)>>('hid_write');
+  late final _write = _writePtr.asFunction<int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int)>();
 
   /// @brief Read an Input report from a HID device with timeout.
   ///
@@ -259,13 +234,9 @@ class Api {
     );
   }
 
-  late final _read_timeoutPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>,
-              size_t, ffi.Int32)>>('hid_read_timeout');
-  late final _read_timeout = _read_timeoutPtr.asFunction<
-      int Function(
-          ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int, int)>();
+  late final _read_timeoutPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, size_t, ffi.Int32)>>('hid_read_timeout');
+  late final _read_timeout = _read_timeoutPtr.asFunction<int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int, int)>();
 
   /// @brief Read an Input report from a HID device.
   ///
@@ -298,12 +269,8 @@ class Api {
     );
   }
 
-  late final _readPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>,
-              size_t)>>('hid_read');
-  late final _read = _readPtr.asFunction<
-      int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int)>();
+  late final _readPtr = _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, size_t)>>('hid_read');
+  late final _read = _readPtr.asFunction<int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int)>();
 
   /// @brief Set the device handle to be non-blocking.
   ///
@@ -332,12 +299,8 @@ class Api {
     );
   }
 
-  late final _set_nonblockingPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(
-              ffi.Pointer<hid_device>, ffi.Int32)>>('hid_set_nonblocking');
-  late final _set_nonblocking = _set_nonblockingPtr
-      .asFunction<int Function(ffi.Pointer<hid_device>, int)>();
+  late final _set_nonblockingPtr = _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Int32)>>('hid_set_nonblocking');
+  late final _set_nonblocking = _set_nonblockingPtr.asFunction<int Function(ffi.Pointer<hid_device>, int)>();
 
   /// @brief Send a Feature report to the device.
   ///
@@ -378,12 +341,9 @@ class Api {
     );
   }
 
-  late final _send_feature_reportPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>,
-              size_t)>>('hid_send_feature_report');
-  late final _send_feature_report = _send_feature_reportPtr.asFunction<
-      int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int)>();
+  late final _send_feature_reportPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, size_t)>>('hid_send_feature_report');
+  late final _send_feature_report = _send_feature_reportPtr.asFunction<int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int)>();
 
   /// @brief Get a feature report from a HID device.
   ///
@@ -421,12 +381,9 @@ class Api {
     );
   }
 
-  late final _get_feature_reportPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>,
-              size_t)>>('hid_get_feature_report');
-  late final _get_feature_report = _get_feature_reportPtr.asFunction<
-      int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int)>();
+  late final _get_feature_reportPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, size_t)>>('hid_get_feature_report');
+  late final _get_feature_report = _get_feature_reportPtr.asFunction<int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int)>();
 
   /// @brief Get a input report from a HID device.
   ///
@@ -462,12 +419,9 @@ class Api {
     );
   }
 
-  late final _get_input_reportPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>,
-              size_t)>>('hid_get_input_report');
-  late final _get_input_report = _get_input_reportPtr.asFunction<
-      int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int)>();
+  late final _get_input_reportPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, size_t)>>('hid_get_input_report');
+  late final _get_input_report = _get_input_reportPtr.asFunction<int Function(ffi.Pointer<hid_device>, ffi.Pointer<ffi.Uint8>, int)>();
 
   /// @brief Close a HID device.
   ///
@@ -483,11 +437,8 @@ class Api {
     );
   }
 
-  late final _closePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<hid_device>)>>(
-          'hid_close');
-  late final _close =
-      _closePtr.asFunction<void Function(ffi.Pointer<hid_device>)>();
+  late final _closePtr = _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<hid_device>)>>('hid_close');
+  late final _close = _closePtr.asFunction<void Function(ffi.Pointer<hid_device>)>();
 
   /// @brief Get The Manufacturer String from a HID device.
   ///
@@ -510,12 +461,9 @@ class Api {
     );
   }
 
-  late final _get_manufacturer_stringPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>,
-              size_t)>>('hid_get_manufacturer_string');
-  late final _get_manufacturer_string = _get_manufacturer_stringPtr.asFunction<
-      int Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>, int)>();
+  late final _get_manufacturer_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>, size_t)>>('hid_get_manufacturer_string');
+  late final _get_manufacturer_string = _get_manufacturer_stringPtr.asFunction<int Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>, int)>();
 
   /// @brief Get The Product String from a HID device.
   ///
@@ -538,12 +486,9 @@ class Api {
     );
   }
 
-  late final _get_product_stringPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>,
-              size_t)>>('hid_get_product_string');
-  late final _get_product_string = _get_product_stringPtr.asFunction<
-      int Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>, int)>();
+  late final _get_product_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>, size_t)>>('hid_get_product_string');
+  late final _get_product_string = _get_product_stringPtr.asFunction<int Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>, int)>();
 
   /// @brief Get The Serial Number String from a HID device.
   ///
@@ -566,13 +511,9 @@ class Api {
     );
   }
 
-  late final _get_serial_number_stringPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>,
-              size_t)>>('hid_get_serial_number_string');
-  late final _get_serial_number_string =
-      _get_serial_number_stringPtr.asFunction<
-          int Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>, int)>();
+  late final _get_serial_number_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>, size_t)>>('hid_get_serial_number_string');
+  late final _get_serial_number_string = _get_serial_number_stringPtr.asFunction<int Function(ffi.Pointer<hid_device>, ffi.Pointer<wchar_t>, int)>();
 
   /// @brief Get a string from a HID device, based on its string index.
   ///
@@ -598,12 +539,9 @@ class Api {
     );
   }
 
-  late final _get_indexed_stringPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Int32,
-              ffi.Pointer<wchar_t>, size_t)>>('hid_get_indexed_string');
-  late final _get_indexed_string = _get_indexed_stringPtr.asFunction<
-      int Function(ffi.Pointer<hid_device>, int, ffi.Pointer<wchar_t>, int)>();
+  late final _get_indexed_stringPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<hid_device>, ffi.Int32, ffi.Pointer<wchar_t>, size_t)>>('hid_get_indexed_string');
+  late final _get_indexed_string = _get_indexed_stringPtr.asFunction<int Function(ffi.Pointer<hid_device>, int, ffi.Pointer<wchar_t>, int)>();
 
   /// @brief Get a string describing the last error which occurred.
   ///
@@ -631,11 +569,8 @@ class Api {
     );
   }
 
-  late final _errorPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<wchar_t> Function(ffi.Pointer<hid_device>)>>('hid_error');
-  late final _error = _errorPtr
-      .asFunction<ffi.Pointer<wchar_t> Function(ffi.Pointer<hid_device>)>();
+  late final _errorPtr = _lookup<ffi.NativeFunction<ffi.Pointer<wchar_t> Function(ffi.Pointer<hid_device>)>>('hid_error');
+  late final _error = _errorPtr.asFunction<ffi.Pointer<wchar_t> Function(ffi.Pointer<hid_device>)>();
 
   /// @brief Get a runtime version of the library.
   ///
@@ -647,11 +582,8 @@ class Api {
     return _version();
   }
 
-  late final _versionPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<hid_api_version> Function()>>(
-          'hid_version');
-  late final _version =
-      _versionPtr.asFunction<ffi.Pointer<hid_api_version> Function()>();
+  late final _versionPtr = _lookup<ffi.NativeFunction<ffi.Pointer<hid_api_version> Function()>>('hid_version');
+  late final _version = _versionPtr.asFunction<ffi.Pointer<hid_api_version> Function()>();
 
   /// @brief Get a runtime version string of the library.
   ///
@@ -663,14 +595,11 @@ class Api {
     return _version_str();
   }
 
-  late final _version_strPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Int8> Function()>>(
-          'hid_version_str');
-  late final _version_str =
-      _version_strPtr.asFunction<ffi.Pointer<ffi.Int8> Function()>();
+  late final _version_strPtr = _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Int8> Function()>>('hid_version_str');
+  late final _version_str = _version_strPtr.asFunction<ffi.Pointer<ffi.Int8> Function()>();
 }
 
-class hid_api_version extends ffi.Struct {
+base class hid_api_version extends ffi.Struct {
   @ffi.Int32()
   external int major;
 
@@ -681,10 +610,10 @@ class hid_api_version extends ffi.Struct {
   external int patch;
 }
 
-class hid_device_ extends ffi.Opaque {}
+base class hid_device_ extends ffi.Opaque {}
 
 /// hidapi info structure
-class hid_device_info extends ffi.Struct {
+base class hid_device_info extends ffi.Struct {
   /// Platform-specific device path
   external ffi.Pointer<ffi.Int8> path;
 
