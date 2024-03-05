@@ -162,7 +162,8 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                 } else {
                     result.error("error", "error", "error")
                 }
-            }            "close" -> {
+            }
+            "close" -> {
                 connection?.close()
                 connection = null
                 device = null
