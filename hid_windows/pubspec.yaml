@@ -11,7 +11,11 @@ dependencies:
   ffi: ^2.1.0
   flutter:
     sdk: flutter
-  hid_platform_interface: ^0.0.9
+  hid_platform_interface: 
+    version: ^0.0.9
+    git:
+      url: https://github.com/filipsky/hid
+      path: hid_platform_interface
 
 dev_dependencies:
   flutter_test:

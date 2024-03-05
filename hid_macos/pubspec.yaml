@@ -15,7 +15,7 @@ dependencies:
     version: ^0.0.9
     git:
       url: https://github.com/filipsky/hid
-      path: hid
+      path: hid_platform_interface
 
 dev_dependencies:
   flutter_test:
