@@ -11,11 +11,31 @@ dependencies:
   flutter:
     sdk: flutter
   ffi: ^2.1.0
-  hid_platform_interface: ^0.0.9
-  hid_windows: ^0.1.1
-  hid_macos: ^0.1.2
-  hid_linux: ^0.1.1
-  hid_android: ^0.1.4
+  hid_platform_interface: 
+    version: ^0.0.9
+    git:
+      url: https://github.com/filipsky/hid
+      path: hid
+  hid_windows: 
+    version: ^0.1.1
+    git:
+      url: https://github.com/filipsky/hid
+      path: hid
+  hid_macos: 
+    version: ^0.1.2
+    git:
+      url: https://github.com/filipsky/hid
+      path: hid
+  hid_linux: 
+    version: ^0.1.1
+    git:
+      url: https://github.com/filipsky/hid
+      path: hid
+  hid_android: ^0.1.1
+    version: ^0.1.1
+    git:
+      url: https://github.com/filipsky/hid
+      path: hid
 
 dev_dependencies:
   flutter_test:
