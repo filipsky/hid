@@ -111,6 +111,46 @@ class UsbDevice extends Device {
     }
     calloc.free(buf);
   }
+
+  @override
+  Future<void> setFeature(Uint8List bytes) async {
+    final raw = _raw;
+    if (raw == null) throw Exception();
+    final buf = calloc<Uint8>(bytes.lengthInBytes);
+    final Uint8List _buf = buf.asTypedList(bytes.lengthInBytes);
+    _buf.setRange(0, bytes.lengthInBytes, bytes);
+    var offset = 0;
+    while (isOpen && bytes.lengthInBytes - offset > 0) {
+      final count = _api.send_feature_report(raw, buf.elementAt(offset), bytes.lengthInBytes - offset);
+      if (count == -1) {
+        break;
+      } else {
+        offset += count;
+      }
+    }
+    calloc.free(buf);
+  }
+
+  @override
+  Future<void> getFeature(Uint8List bytes) async {
+    final raw = _raw;
+    if (raw == null) throw Exception();
+    final buf = calloc<Uint8>(bytes.lengthInBytes);
+    var count = 0;
+    var pos = 0;
+    while (isOpen) {
+      count = _api.get_feature_report(raw, buf, bytes.lengthInBytes);
+      if (count == -1) {
+        break;
+      } else if (count > 0) {
+        final res = buf.asTypedList(count);
+        for (var idx = 0; idx < count; idx++) {
+          bytes[pos++] = res[idx];
+        }
+      }
+    }
+    calloc.free(buf);
+  }
 }
 
 extension PointerToString on Pointer<Int32> {

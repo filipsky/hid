@@ -79,7 +79,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                 writeEndpointIndex = pair.second
 
                 val success : Boolean = connection!!.claimInterface(device!!.getInterface(readInterfaceIndex!!), true) &&
-                 ((readInterfaceIndex == writeInterfaceIndex) || connection!!.claimInterface(device!!.getInterface(writeInterfaceIndex!!), true))
+                     ((readInterfaceIndex == writeInterfaceIndex) || connection!!.claimInterface(device!!.getInterface(writeInterfaceIndex!!), true))
 
                 result.success( success )
             }
@@ -121,7 +121,48 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                     result.error("error", "error", "error")
                 }
             }
-            "close" -> {
+            "setFeature" -> {
+                if (connection != null) {
+                    val bytes: ByteArray = call.argument("bytes")!!
+                    Thread {
+                        kotlin.run {
+                            connection!!.controlTransfer(
+                                33, // (0x01 << 5)|0x01|0x00
+                                9,
+                                768 | bytes[0],
+                                1,
+                                bytes.size - 1,
+                                bytes,
+                                1000
+                            )
+                            result.success(0)
+                        }
+                    }.start()
+                } else {
+                    result.error("error", "error", "error")
+                }
+            }
+            "getFeature" -> {
+                if (connection != null) {
+                    val bytes: ByteArray = call.argument("bytes")!!
+                    Thread {
+                        kotlin.run {
+                            connection!!.controlTransfer(
+                                161, //(0x01 << 5)|0x01|0x80
+                                1,
+                                768 | bytes[0],
+                                1,
+                                bytes.size - 1,
+                                bytes,
+                                1000
+                            )
+                            result.success(0)
+                        }
+                    }.start()
+                } else {
+                    result.error("error", "error", "error")
+                }
+            }            "close" -> {
                 connection?.close()
                 connection = null
                 device = null
