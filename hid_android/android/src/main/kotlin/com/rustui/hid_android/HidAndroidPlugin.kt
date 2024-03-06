@@ -129,7 +129,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                             connection!!.controlTransfer(
                                 33, // (0x01 << 5)|0x01|0x00
                                 9,
-                                768 | bytes[0],
+                                768 + (bytes[0] & 255),
                                 1,
                                 bytes.size - 1,
                                 bytes,
@@ -150,7 +150,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                             connection!!.controlTransfer(
                                 161, //(0x01 << 5)|0x01|0x80
                                 1,
-                                768 | bytes[0],
+                                768 + (bytes[0] & 255),
                                 1,
                                 bytes.size - 1,
                                 bytes,
@@ -162,7 +162,8 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                 } else {
                     result.error("error", "error", "error")
                 }
-            }            "close" -> {
+            }
+            "close" -> {
                 connection?.close()
                 connection = null
                 device = null
