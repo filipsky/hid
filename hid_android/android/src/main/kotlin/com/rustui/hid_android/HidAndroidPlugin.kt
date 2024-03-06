@@ -210,6 +210,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                 connection?.close()
                 connection = null
                 device = null
+                result.success(0)
             }
             else -> result.notImplemented()
         }
