@@ -16,6 +16,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import kotlin.experimental.and
 
 private const val REQUEST_GET_REPORT = 0x01;
 private const val REQUEST_SET_REPORT = 0x09;
@@ -93,7 +94,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                 if (writeInterfaceIndex != readInterfaceIndex) {
                     success = success and connection!!.claimInterface(device!!.getInterface(writeInterfaceIndex!!), true)
                 }
-                if (hidInterfaceIndex != readInterfaceIndex and hidInterfaceIndex != writeInterfaceIndex) {
+                if (hidInterfaceIndex != readInterfaceIndex && hidInterfaceIndex != writeInterfaceIndex) {
                     success = success and connection!!.claimInterface(device!!.getInterface(hidInterfaceIndex!!), true)
                 }
 
@@ -142,13 +143,13 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                     val bytes: ByteArray = call.argument("bytes")!!
                     Thread {
                         kotlin.run {
-                            val reportId = bytes.get(0) and 0xff
+                            val reportId = bytes.get(0).toInt() and 0xff
 
                             connection!!.controlTransfer(
                                 UsbConstants.USB_DIR_OUT or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
                                 REQUEST_SET_REPORT,
                                 reportId or REPORT_TYPE_OUTPUT, 
-                                hidEndpointIndex,
+                                hidEndpointIndex ?: 0,
                                 bytes,
                                 1,
                                 bytes.size - 1,
@@ -166,13 +167,13 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                     val bytes: ByteArray = call.argument("bytes")!!
                     Thread {
                         kotlin.run {
-                            val reportId = bytes.get(0) and 0xff
+                            val reportId = bytes.get(0).toInt() and 0xff
 
                             connection!!.controlTransfer(
                                 UsbConstants.USB_DIR_IN or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
                                 REQUEST_GET_REPORT,
                                 reportId or REPORT_TYPE_INPUT,
-                                hidEndpointIndex,
+                                hidEndpointIndex ?: 0,
                                 bytes,
                                 bytes.size,
                                 0
@@ -230,7 +231,7 @@ fun getHIDIndices(device: UsbDevice): Pair<Int, Int>? {
         if (inter.getInterfaceClass() == UsbConstants.USB_CLASS_HID) {
             for (j in 0 until inter.endpointCount) {
                 val endpoint = inter.getEndpoint(j)
-                if (endpoint.type == UsbConstants.USB_ENDPOINT_XFER_INT && endpoint.direction == UsbConstants.USB_IN) {
+                if (endpoint.type == UsbConstants.USB_ENDPOINT_XFER_INT && endpoint.direction == UsbConstants.USB_DIR_IN) {
                     return Pair(i, j)
                 }
             }
