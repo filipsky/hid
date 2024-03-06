@@ -129,7 +129,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                             connection!!.controlTransfer(
                                 33, // (0x01 << 5)|0x01|0x00
                                 9,
-                                768 or (bytes.get(0) and 255),
+                                bytes.get(0), // 768 | 
                                 1,
                                 bytes.size - 1,
                                 bytes,
@@ -150,7 +150,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                             connection!!.controlTransfer(
                                 161, //(0x01 << 5)|0x01|0x80
                                 1,
-                                768 or (bytes.get(0) and 255),
+                                bytes.get(0), // 768 | 
                                 1,
                                 bytes.size - 1,
                                 bytes,
