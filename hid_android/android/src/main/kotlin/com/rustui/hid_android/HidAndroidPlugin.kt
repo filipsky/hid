@@ -30,6 +30,15 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
     private var readEndpointIndex: Int? = null
     private var writeInterfaceIndex: Int? = null
     private var writeEndpointIndex: Int? = null
+    private var hidInterfaceIndex: Int? = null
+    private var hidEndpointIndex: Int? = null
+
+    private const val REQUEST_GET_REPORT = 0x01;
+    private const val REQUEST_SET_REPORT = 0x09;
+    private const val REPORT_TYPE_INPUT = 0x0100;
+    private const val REPORT_TYPE_OUTPUT = 0x0200;
+    private const val REPORT_TYPE_FEATURE = 0x0300;
+
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "hid_android")
@@ -77,9 +86,17 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                 pair = getWriteIndices(device!!)!!
                 writeInterfaceIndex = pair.first
                 writeEndpointIndex = pair.second
+                pair = getHIDIndices(device!!)!!
+                hidInterfaceIndex = pair.first
+                hidEndpointIndex = pair.second
 
-                val success : Boolean = connection!!.claimInterface(device!!.getInterface(readInterfaceIndex!!), true) &&
-                     ((readInterfaceIndex == writeInterfaceIndex) || connection!!.claimInterface(device!!.getInterface(writeInterfaceIndex!!), true))
+                var success : Boolean = connection!!.claimInterface(device!!.getInterface(readInterfaceIndex!!), true);
+                if (writeInterfaceIndex != readInterfaceIndex) {
+                    success = success and connection!!.claimInterface(device!!.getInterface(writeInterfaceIndex!!), true)
+                }
+                if (hidInterfaceIndex != readInterfaceIndex and hidInterfaceIndex != writeInterfaceIndex) {
+                    success = success and connection!!.claimInterface(device!!.getInterface(hidInterfaceIndex!!), true)
+                }
 
                 result.success( success )
             }
@@ -126,14 +143,17 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                     val bytes: ByteArray = call.argument("bytes")!!
                     Thread {
                         kotlin.run {
+                            val reportId = bytes.get(0) and 0xff
+
                             connection!!.controlTransfer(
-                                33, // (0x01 << 5)|0x01|0x00
-                                9,
-                                bytes.get(0), // 768 | 
+                                UsbConstants.USB_DIR_OUT or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
+                                REQUEST_SET_REPORT,
+                                reportId or REPORT_TYPE_OUTPUT, 
+                                hidEndpointIndex,
+                                bytes,
                                 1,
                                 bytes.size - 1,
-                                bytes,
-                                1000
+                                0
                             )
                             result.success(0)
                         }
@@ -147,14 +167,16 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                     val bytes: ByteArray = call.argument("bytes")!!
                     Thread {
                         kotlin.run {
+                            val reportId = bytes.get(0) and 0xff
+
                             connection!!.controlTransfer(
-                                161, //(0x01 << 5)|0x01|0x80
-                                1,
-                                bytes.get(0), // 768 | 
-                                1,
-                                bytes.size - 1,
+                                UsbConstants.USB_DIR_IN or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
+                                REQUEST_GET_REPORT,
+                                reportId or REPORT_TYPE_INPUT,
+                                hidEndpointIndex,
                                 bytes,
-                                1000
+                                bytes.size,
+                                0
                             )
                             result.success(0)
                         }
@@ -197,6 +219,21 @@ fun getWriteIndices(device: UsbDevice): Pair<Int, Int>? {
             val endpoint = inter.getEndpoint(j)
             if (endpoint.type == UsbConstants.USB_ENDPOINT_XFER_INT && endpoint.direction == UsbConstants.USB_DIR_OUT) {
                 return Pair(i, j)
+            }
+        }
+    }
+    return null
+}
+
+fun getHIDIndices(device: UsbDevice): Pair<Int, Int>? {
+    for (i in 0 until device.interfaceCount) {
+        val inter = device.getInterface(i)
+        if (inter.getInterfaceClass() == UsbConstants.USB_CLASS_HID) {
+            for (j in 0 until inter.endpointCount) {
+                val endpoint = inter.getEndpoint(j)
+                if (endpoint.type == UsbConstants.USB_ENDPOINT_XFER_INT && endpoint.direction == UsbConstants.USB_IN) {
+                    return Pair(i, j)
+                }
             }
         }
     }
