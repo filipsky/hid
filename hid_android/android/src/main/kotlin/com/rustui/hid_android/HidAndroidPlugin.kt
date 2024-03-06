@@ -17,6 +17,12 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
+private const val REQUEST_GET_REPORT = 0x01;
+private const val REQUEST_SET_REPORT = 0x09;
+private const val REPORT_TYPE_INPUT = 0x0100;
+private const val REPORT_TYPE_OUTPUT = 0x0200;
+private const val REPORT_TYPE_FEATURE = 0x0300;
+
 /** HidAndroidPlugin */
 class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var channel: MethodChannel
@@ -32,13 +38,6 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
     private var writeEndpointIndex: Int? = null
     private var hidInterfaceIndex: Int? = null
     private var hidEndpointIndex: Int? = null
-
-    private const val REQUEST_GET_REPORT = 0x01;
-    private const val REQUEST_SET_REPORT = 0x09;
-    private const val REPORT_TYPE_INPUT = 0x0100;
-    private const val REPORT_TYPE_OUTPUT = 0x0200;
-    private const val REPORT_TYPE_FEATURE = 0x0300;
-
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "hid_android")
