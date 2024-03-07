@@ -64,7 +64,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                                 context,
                                 0,
                                 Intent("ACTION_USB_PERMISSION"),
-                                0
+                                PendingIntent.FLAG_IMMUTABLE
                             )
                         usbManager.requestPermission(device, permissionIntent)
                     }
