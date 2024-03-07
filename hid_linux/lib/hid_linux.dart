@@ -14,9 +14,9 @@ class HidPluginLinux extends HidPlatform {
   }
 
   @override
-  Future<List<Device>> getDeviceList() async {
+  Future<List<Device>> getDeviceList({int? vendorId, int? productId}) async {
     List<Device> devices = [];
-    final pointer = _api.enumerate(0, 0);
+    final pointer = _api.enumerate(vendorId ?? 0, productId ?? 0);
     var current = pointer;
     while (current.address != nullptr.address) {
       final ref = current.ref;
@@ -46,13 +46,7 @@ class UsbDevice extends Device {
     required String productName,
     required int usagePage,
     required int usage,
-  }) : super(
-            vendorId: vendorId,
-            productId: productId,
-            serialNumber: serialNumber,
-            productName: productName,
-            usagePage: usagePage,
-            usage: usage);
+  }) : super(vendorId: vendorId, productId: productId, serialNumber: serialNumber, productName: productName, usagePage: usagePage, usage: usage);
 
   @override
   Future<bool> open() async {
@@ -101,8 +95,7 @@ class UsbDevice extends Device {
     _buf.setRange(0, bytes.lengthInBytes, bytes);
     var offset = 0;
     while (isOpen && bytes.lengthInBytes - offset > 0) {
-      final count =
-          _api.write(raw, buf.elementAt(offset), bytes.lengthInBytes - offset);
+      final count = _api.write(raw, buf.elementAt(offset), bytes.lengthInBytes - offset);
       if (count == -1) {
         break;
       } else {
