@@ -16,7 +16,7 @@ abstract class HidPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<List<Device>> getDeviceList() {
+  Future<List<Device>> getDeviceList({int? vendorId, int? productId}) {
     throw UnimplementedError();
   }
 }

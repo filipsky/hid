@@ -12,9 +12,12 @@ class HidAndroid extends HidPlatform {
   }
 
   @override
-  Future<List<Device>> getDeviceList() async {
+  Future<List<Device>> getDeviceList({int? vendorId, int? productId}) async {
     final List<Device> list = [];
-    final List<Object?> devices = await _channel.invokeMethod('getDeviceList');
+    final List<Object?> devices = await _channel.invokeMethod('getDeviceList', <String, int?>{
+      'vendorId': vendorId,
+      'productId': productId,
+    });
     for (var deviceObject in devices) {
       final rawDevice = deviceObject! as String;
       final device = jsonDecode(rawDevice);
@@ -32,17 +35,8 @@ class HidAndroid extends HidPlatform {
 class UsbDevice extends Device {
   bool isOpen = false;
   String deviceName;
-  UsbDevice(
-      {required int vendorId,
-      required int productId,
-      required String serialNumber,
-      required String productName,
-      required this.deviceName})
-      : super(
-            vendorId: vendorId,
-            productId: productId,
-            serialNumber: serialNumber,
-            productName: productName);
+  UsbDevice({required int vendorId, required int productId, required String serialNumber, required String productName, required this.deviceName})
+      : super(vendorId: vendorId, productId: productId, serialNumber: serialNumber, productName: productName);
 
   @override
   Future<bool> open() async {

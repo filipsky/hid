@@ -45,19 +45,24 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
             "getDeviceList" -> {
+                val vendorId: Int? = call.argument("vendorId")
+                val productId: Int? = call.argument("productId")
                 val devices: MutableList<String> = mutableListOf()
                 for (device in usbManager.deviceList.values) {
                     try {
-                        val json = gson.toJson(
-                            HidDevice(
-                                device.vendorId,
-                                device.productId,
-                                device.serialNumber ?: "",
-                                device.productName ?: "",
-                                device.deviceName
+                        if (((vendorId == null) or (device.getVendorId() == (vendorId ?: 0))) and 
+                            ((productId == null) or (device.getProductId() == (productId ?: 0)))) {
+                            val json = gson.toJson(
+                                HidDevice(
+                                    device.vendorId,
+                                    device.productId,
+                                    device.serialNumber ?: "",
+                                    device.productName ?: "",
+                                    device.deviceName
+                                )
                             )
-                        )
-                        devices.add(json)
+                            devices.add(json)
+                        }
                     } catch (e: Exception) {
                         val permissionIntent =
                             PendingIntent.getBroadcast(
