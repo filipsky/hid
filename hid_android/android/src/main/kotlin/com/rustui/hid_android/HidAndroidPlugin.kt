@@ -193,16 +193,18 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                                 kotlin.run {
                                     val reportId = bytes.get(0).toInt() and 0xff
 
+                                    val array = ByteArray(bytes.size - 1)
+
                                     connection!!.controlTransfer(
                                         UsbConstants.USB_DIR_IN or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
                                         REQUEST_GET_REPORT,
                                         reportId or REPORT_TYPE_INPUT,
                                         interfaceIndex ?: 0,
-                                        bytes,
-                                        bytes.size,
+                                        array,
+                                        bytes.size - 1,
                                         0
                                     )
-                                    result.success(0)
+                                    result.success(array.map { it.toUByte().toInt() })
                                 }
                             }.start()
                         }
