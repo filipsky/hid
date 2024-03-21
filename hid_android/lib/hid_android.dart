@@ -71,7 +71,13 @@ class UsbDevice extends Device {
 
   @override
   Future<void> getFeature(Uint8List bytes) async {
-    await _channel.invokeMethod('getFeature', <String, Uint8List>{'bytes': bytes});
+    final List<Object?> array = await _channel.invokeMethod('getFeature', <String, Uint8List>{'bytes': bytes});
+    final res = array.map((e) => e! as int).toList();
+    final count = min(res.length, bytes.length - 1);
+    var pos = 1; // keep the first byte in place
+    for (var idx = 0; idx < count; idx++) {
+      bytes[pos++] = res[idx];
+    }
   }
 
   @override
