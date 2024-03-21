@@ -21,14 +21,18 @@ class HidAndroid extends HidPlatform {
     for (var deviceObject in devices) {
       final rawDevice = deviceObject as String?;
       if (rawDevice != null) {
-        final json = jsonDecode(rawDevice);
-        final device = UsbDevice(
-            vendorId: json['vendorId'],
-            productId: json['productId'],
-            serialNumber: json['serialNumber'] ?? '',
-            productName: json['productName'] ?? '',
-            deviceName: json['deviceName'] ?? '');
-        list.add(device);
+        try {
+          final json = jsonDecode(rawDevice);
+          final device = UsbDevice(
+              vendorId: json['vendorId'],
+              productId: json['productId'],
+              serialNumber: json['serialNumber'] ?? '',
+              productName: json['productName'] ?? '',
+              deviceName: json['deviceName'] ?? '');
+          list.add(device);
+        } catch (e) {
+          // ignored
+        }
       }
     }
     return list;
