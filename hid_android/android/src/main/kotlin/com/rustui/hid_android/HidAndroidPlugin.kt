@@ -77,147 +77,171 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                 result.success(devices)
             }
             "open" -> {
-                device = usbManager.deviceList[call.argument("deviceName")]!!
-                connection = usbManager.openDevice(device)
+                try {
+                    device = usbManager.deviceList[call.argument("deviceName")]!!
+                    connection = usbManager.openDevice(device)
                 
-                result.success( true )
+                    result.success( true )
+                } catch (e: Exception) {
+                    result.error("error", "error", "error")
+                }
             }
             "read" -> {
-                if (connection != null) {
-                    val length: Int = call.argument("length")!!
-                    val duration: Int = call.argument("duration")!!
-                    val pair = getReadIndices(device!!)
-                    if (pair == null) {
-                        result.error("error", "error", "error")
-                    } else {
-                        val interfaceIndex = pair.first;
-                        val endpointIndex = pair.second;
-                        if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
+                try {
+                    if (connection != null) {
+                        val length: Int = call.argument("length")!!
+                        val duration: Int = call.argument("duration")!!
+                        val pair = getReadIndices(device!!)
+                        if (pair == null) {
                             result.error("error", "error", "error")
                         } else {
-                            Thread {
-                                kotlin.run {
-                                    val array = ByteArray(length)
-                                    connection!!.bulkTransfer(
-                                        device!!.getInterface(interfaceIndex!!).getEndpoint(endpointIndex!!),
-                                        array,
-                                        length,
-                                        duration
-                                    )
-                                    result.success(array.map { it.toUByte().toInt() })
-                                }
-                            }.start()
+                            val interfaceIndex = pair.first;
+                            val endpointIndex = pair.second;
+                            if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
+                                result.error("error", "error", "error")
+                            } else {
+                                Thread {
+                                    kotlin.run {
+                                        val array = ByteArray(length)
+                                        connection!!.bulkTransfer(
+                                            device!!.getInterface(interfaceIndex!!).getEndpoint(endpointIndex!!),
+                                            array,
+                                            length,
+                                            duration
+                                        )
+                                        result.success(array.map { it.toUByte().toInt() })
+                                    }
+                                }.start()
+                            }
                         }
+                    } else {
+                        result.error("error", "error", "error")
                     }
-                } else {
+                } catch (e: Exception) {
                     result.error("error", "error", "error")
                 }
             }
             "write" -> {
-                if (connection != null) {
-                    val bytes: ByteArray = call.argument("bytes")!!
-                    val pair = getWriteIndices(device!!)
-                    if (pair == null) {
-                        result.error("error", "error", "error")
-                    } else {
-                        val interfaceIndex = pair.first;
-                        val endpointIndex = pair.second;
-                        if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
+                try {
+                    if (connection != null) {
+                        val bytes: ByteArray = call.argument("bytes")!!
+                        val pair = getWriteIndices(device!!)
+                        if (pair == null) {
                             result.error("error", "error", "error")
                         } else {
-                            Thread {
-                                kotlin.run {
-                                    connection!!.bulkTransfer(
-                                        device!!.getInterface(interfaceIndex!!).getEndpoint(endpointIndex!!),
-                                        bytes,
-                                        bytes.size,
-                                        1000
-                                    )
-                                    result.success(0)
-                                }
-                            }.start()
+                            val interfaceIndex = pair.first;
+                            val endpointIndex = pair.second;
+                            if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
+                                result.error("error", "error", "error")
+                            } else {
+                                Thread {
+                                    kotlin.run {
+                                        connection!!.bulkTransfer(
+                                            device!!.getInterface(interfaceIndex!!).getEndpoint(endpointIndex!!),
+                                            bytes,
+                                            bytes.size,
+                                            1000
+                                        )
+                                        result.success(0)
+                                    }
+                                }.start()
+                            }
                         }
+                    } else {
+                        result.error("error", "error", "error")
                     }
-                } else {
+                } catch (e: Exception) {
                     result.error("error", "error", "error")
                 }
             }
             "setFeature" -> {
-                if (connection != null) {
-                    val bytes: ByteArray = call.argument("bytes")!!
-                    val pair = getHIDIndices(device!!)
-                    if (pair == null) {
-                        result.error("error", "error", "error")
-                    } else {
-                        val interfaceIndex = pair.first;
-                        val endpointIndex = pair.second;
-                        if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
+                try {
+                    if (connection != null) {
+                        val bytes: ByteArray = call.argument("bytes")!!
+                        val pair = getHIDIndices(device!!)
+                        if (pair == null) {
                             result.error("error", "error", "error")
                         } else {
-                            Thread {
-                                kotlin.run {
-                                    val reportId = bytes.get(0).toInt() and 0xff
+                            val interfaceIndex = pair.first;
+                            val endpointIndex = pair.second;
+                            if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
+                                result.error("error", "error", "error")
+                            } else {
+                                Thread {
+                                    kotlin.run {
+                                        val reportId = bytes.get(0).toInt() and 0xff
 
-                                    connection!!.controlTransfer(
-                                        UsbConstants.USB_DIR_OUT or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
-                                        REQUEST_SET_REPORT,
-                                        reportId or REPORT_TYPE_OUTPUT, 
-                                        interfaceIndex ?: 0,
-                                        bytes,
-                                        1,
-                                        bytes.size - 1,
-                                        0
-                                    )
-                                    result.success(0)
-                                }
-                            }.start()
+                                        connection!!.controlTransfer(
+                                            UsbConstants.USB_DIR_OUT or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
+                                            REQUEST_SET_REPORT,
+                                            reportId or REPORT_TYPE_OUTPUT, 
+                                            interfaceIndex ?: 0,
+                                            bytes,
+                                            1,
+                                            bytes.size - 1,
+                                            0
+                                        )
+                                        result.success(0)
+                                    }
+                                }.start()
+                            }
                         }
+                    } else {
+                        result.error("error", "error", "error")
                     }
-                } else {
+                } catch (e: Exception) {
                     result.error("error", "error", "error")
                 }
             }
             "getFeature" -> {
-                if (connection != null) {
-                    val bytes: ByteArray = call.argument("bytes")!!
-                    val pair = getHIDIndices(device!!)
-                    if (pair == null) {
-                        result.error("error", "error", "error")
-                    } else {
-                        val interfaceIndex = pair.first;
-                        val endpointIndex = pair.second;
-                        if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
+                try {
+                    if (connection != null) {
+                        val bytes: ByteArray = call.argument("bytes")!!
+                        val pair = getHIDIndices(device!!)
+                        if (pair == null) {
                             result.error("error", "error", "error")
                         } else {
-                            Thread {
-                                kotlin.run {
-                                    val reportId = bytes.get(0).toInt() and 0xff
+                            val interfaceIndex = pair.first;
+                            val endpointIndex = pair.second;
+                            if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
+                                result.error("error", "error", "error")
+                            } else {
+                                Thread {
+                                    kotlin.run {
+                                        val reportId = bytes.get(0).toInt() and 0xff
 
-                                    val array = ByteArray(bytes.size - 1)
+                                        val array = ByteArray(bytes.size - 1)
 
-                                    connection!!.controlTransfer(
-                                        UsbConstants.USB_DIR_IN or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
-                                        REQUEST_GET_REPORT,
-                                        reportId or REPORT_TYPE_INPUT,
-                                        interfaceIndex ?: 0,
-                                        array,
-                                        bytes.size - 1,
-                                        0
-                                    )
-                                    result.success(array.map { it.toUByte().toInt() })
-                                }
-                            }.start()
+                                        connection!!.controlTransfer(
+                                            UsbConstants.USB_DIR_IN or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
+                                            REQUEST_GET_REPORT,
+                                            reportId or REPORT_TYPE_INPUT,
+                                            interfaceIndex ?: 0,
+                                            array,
+                                            bytes.size - 1,
+                                            0
+                                        )
+                                        result.success(array.map { it.toUByte().toInt() })
+                                    }
+                                }.start()
+                            }
                         }
+                    } else {
+                        result.error("error", "error", "error")
                     }
-                } else {
+                } catch (e: Exception) {
                     result.error("error", "error", "error")
                 }
             }
             "close" -> {
-                connection?.close()
-                connection = null
-                device = null
-                result.success(0)
+                try {
+                    connection?.close()
+                    connection = null
+                    device = null
+                    result.success(0)
+                } catch (e: Exception) {
+                    result.error("error", "error", "error")
+                }
             }
             else -> result.notImplemented()
         }
