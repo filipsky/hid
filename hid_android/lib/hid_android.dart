@@ -31,6 +31,7 @@ class HidAndroid extends HidPlatform {
               deviceName: json['deviceName'] ?? '');
           list.add(device);
         } catch (e) {
+          print("HID: Error decoding $rawDevice");
           // ignored
         }
       }
