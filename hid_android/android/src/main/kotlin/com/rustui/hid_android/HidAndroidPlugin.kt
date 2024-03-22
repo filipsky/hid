@@ -136,13 +136,17 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                             } else {
                                 Thread {
                                     kotlin.run {
-                                        connection!!.bulkTransfer(
-                                            device!!.getInterface(interfaceIndex!!).getEndpoint(endpointIndex!!),
-                                            bytes,
-                                            bytes.size,
-                                            1000
-                                        )
-                                        result.success(0)
+                                        try {
+                                            connection!!.bulkTransfer(
+                                                device!!.getInterface(interfaceIndex!!).getEndpoint(endpointIndex!!),
+                                                bytes,
+                                                bytes.size,
+                                                1000
+                                            )
+                                            result.success(0)
+                                        } catch (e: Exception) {
+                                            result.error("error", "error", "error")
+                                        }
                                     }
                                 }.start()
                             }
@@ -169,19 +173,23 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                             } else {
                                 Thread {
                                     kotlin.run {
-                                        val reportId = bytes.get(0).toInt() and 0xff
+                                        try {
+                                            val reportId = bytes.get(0).toInt() and 0xff
 
-                                        connection!!.controlTransfer(
-                                            UsbConstants.USB_DIR_OUT or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
-                                            REQUEST_SET_REPORT,
-                                            reportId or REPORT_TYPE_OUTPUT, 
-                                            interfaceIndex ?: 0,
-                                            bytes,
-                                            1,
-                                            bytes.size - 1,
-                                            0
-                                        )
-                                        result.success(0)
+                                            connection!!.controlTransfer(
+                                                UsbConstants.USB_DIR_OUT or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
+                                                REQUEST_SET_REPORT,
+                                                reportId or REPORT_TYPE_OUTPUT, 
+                                                interfaceIndex ?: 0,
+                                                bytes,
+                                                1,
+                                                bytes.size - 1,
+                                                0
+                                            )
+                                            result.success(0)
+                                        } catch (e: Exception) {
+                                            result.error("error", "error", "error")
+                                        }
                                     }
                                 }.start()
                             }
@@ -208,20 +216,24 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                             } else {
                                 Thread {
                                     kotlin.run {
-                                        val reportId = bytes.get(0).toInt() and 0xff
+                                        try {
+                                            val reportId = bytes.get(0).toInt() and 0xff
 
-                                        val array = ByteArray(bytes.size - 1)
+                                            val array = ByteArray(bytes.size - 1)
 
-                                        connection!!.controlTransfer(
-                                            UsbConstants.USB_DIR_IN or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
-                                            REQUEST_GET_REPORT,
-                                            reportId or REPORT_TYPE_INPUT,
-                                            interfaceIndex ?: 0,
-                                            array,
-                                            bytes.size - 1,
-                                            0
-                                        )
-                                        result.success(array.map { it.toUByte().toInt() })
+                                            connection!!.controlTransfer(
+                                                UsbConstants.USB_DIR_IN or UsbConstants.USB_TYPE_CLASS or UsbConstants.USB_INTERFACE_SUBCLASS_BOOT,
+                                                REQUEST_GET_REPORT,
+                                                reportId or REPORT_TYPE_INPUT,
+                                                interfaceIndex ?: 0,
+                                                array,
+                                                bytes.size - 1,
+                                                0
+                                            )
+                                            result.success(array.map { it.toUByte().toInt() })
+                                        } catch (e: Exception) {
+                                            result.error("error", "error", "error")
+                                        }
                                     }
                                 }.start()
                             }
