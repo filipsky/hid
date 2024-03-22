@@ -83,7 +83,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                 
                     result.success( true )
                 } catch (e: Exception) {
-                    result.error("error", e.message, e.getStackTrace())
+                    result.error("error", e.message, e.getStackTrace().joinToString(separator = "\n"))
                 }
             }
             "read" -> {
@@ -118,7 +118,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                         result.error("error", "device connection is null", call.method)
                     }
                 } catch (e: Exception) {
-                    result.error("error", e.message, e.getStackTrace())
+                    result.error("error", e.message, e.getStackTrace().joinToString(separator = "\n"))
                 }
             }
             "write" -> {
@@ -145,7 +145,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                                             )
                                             result.success(0)
                                         } catch (e: Exception) {
-                                            result.error("error", e.message, e.getStackTrace())
+                                            result.error("error", e.message, e.getStackTrace().joinToString(separator = "\n"))
                                         }
                                     }
                                 }.start()
@@ -155,7 +155,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                         result.error("error", "device connection is null", call.method)
                     }
                 } catch (e: Exception) {
-                    result.error("error", e.message, e.getStackTrace())
+                    result.error("error", e.message, e.getStackTrace().joinToString(separator = "\n"))
                 }
             }
             "setFeature" -> {
@@ -188,7 +188,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                                             )
                                             result.success(0)
                                         } catch (e: Exception) {
-                                            result.error("error", e.message, e.getStackTrace())
+                                            result.error("error", e.message, e.getStackTrace().joinToString(separator = "\n"))
                                         }
                                     }
                                 }.start()
@@ -198,7 +198,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                         result.error("error", "device connection is null", call.method)
                     }
                 } catch (e: Exception) {
-                    result.error("error", e.message, e.getStackTrace())
+                    result.error("error", e.message, e.getStackTrace().joinToString(separator = "\n"))
                 }
             }
             "getFeature" -> {
@@ -232,7 +232,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                                             )
                                             result.success(array.map { it.toUByte().toInt() })
                                         } catch (e: Exception) {
-                                            result.error("error", e.message, e.getStackTrace())
+                                            result.error("error", e.message, e.getStackTrace().joinToString(separator = "\n"))
                                         }
                                     }
                                 }.start()
@@ -242,7 +242,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                         result.error("error", "device connection is null", call.method)
                     }
                 } catch (e: Exception) {
-                    result.error("error", e.message, e.getStackTrace())
+                    result.error("error", e.message, e.getStackTrace().joinToString(separator = "\n"))
                 }
             }
             "close" -> {
@@ -252,7 +252,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                     device = null
                     result.success(0)
                 } catch (e: Exception) {
-                    result.error("error", e.message, e.getStackTrace())
+                    result.error("error", e.message, e.getStackTrace().joinToString(separator = "\n"))
                 }
             }
             else -> result.notImplemented()
