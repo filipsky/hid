@@ -83,7 +83,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                 
                     result.success( true )
                 } catch (e: Exception) {
-                    result.error("error", "error", "error")
+                    result.error("error", e.message, e.getStackTrace())
                 }
             }
             "read" -> {
@@ -93,12 +93,12 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                         val duration: Int = call.argument("duration")!!
                         val pair = getReadIndices(device!!)
                         if (pair == null) {
-                            result.error("error", "error", "error")
+                            result.error("error", "Could not find interface and endpoint for read operation", call.method)
                         } else {
                             val interfaceIndex = pair.first;
                             val endpointIndex = pair.second;
                             if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
-                                result.error("error", "error", "error")
+                                result.error("error", "Could not claim interface for read operation", call.method)
                             } else {
                                 Thread {
                                     kotlin.run {
@@ -115,10 +115,10 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                             }
                         }
                     } else {
-                        result.error("error", "error", "error")
+                        result.error("error", "device connection is null", call.method)
                     }
                 } catch (e: Exception) {
-                    result.error("error", "error", "error")
+                    result.error("error", e.message, e.getStackTrace())
                 }
             }
             "write" -> {
@@ -127,12 +127,12 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                         val bytes: ByteArray = call.argument("bytes")!!
                         val pair = getWriteIndices(device!!)
                         if (pair == null) {
-                            result.error("error", "error", "error")
+                            result.error("error", "Could not find interface and endpoint for write operation", call.method)
                         } else {
                             val interfaceIndex = pair.first;
                             val endpointIndex = pair.second;
                             if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
-                                result.error("error", "error", "error")
+                                result.error("error", "Could not claim interface for write operation", call.method)
                             } else {
                                 Thread {
                                     kotlin.run {
@@ -145,17 +145,17 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                                             )
                                             result.success(0)
                                         } catch (e: Exception) {
-                                            result.error("error", "error", "error")
+                                            result.error("error", e.message, e.getStackTrace())
                                         }
                                     }
                                 }.start()
                             }
                         }
                     } else {
-                        result.error("error", "error", "error")
+                        result.error("error", "device connection is null", call.method)
                     }
                 } catch (e: Exception) {
-                    result.error("error", "error", "error")
+                    result.error("error", e.message, e.getStackTrace())
                 }
             }
             "setFeature" -> {
@@ -164,12 +164,12 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                         val bytes: ByteArray = call.argument("bytes")!!
                         val pair = getHIDIndices(device!!)
                         if (pair == null) {
-                            result.error("error", "error", "error")
+                            result.error("error", "Could not find interface and endpoint for HID operation", call.method)
                         } else {
                             val interfaceIndex = pair.first;
                             val endpointIndex = pair.second;
                             if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
-                                result.error("error", "error", "error")
+                                result.error("error", "Could not claim interface for HID operation", call.method)
                             } else {
                                 Thread {
                                     kotlin.run {
@@ -188,17 +188,17 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                                             )
                                             result.success(0)
                                         } catch (e: Exception) {
-                                            result.error("error", "error", "error")
+                                            result.error("error", e.message, e.getStackTrace())
                                         }
                                     }
                                 }.start()
                             }
                         }
                     } else {
-                        result.error("error", "error", "error")
+                        result.error("error", "device connection is null", call.method)
                     }
                 } catch (e: Exception) {
-                    result.error("error", "error", "error")
+                    result.error("error", e.message, e.getStackTrace())
                 }
             }
             "getFeature" -> {
@@ -207,12 +207,12 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                         val bytes: ByteArray = call.argument("bytes")!!
                         val pair = getHIDIndices(device!!)
                         if (pair == null) {
-                            result.error("error", "error", "error")
+                            result.error("error", "Could not find interface and endpoint for HID operation", call.method)
                         } else {
                             val interfaceIndex = pair.first;
                             val endpointIndex = pair.second;
                             if (!connection!!.claimInterface(device!!.getInterface(interfaceIndex!!), true)) {
-                                result.error("error", "error", "error")
+                                result.error("error", "Could not claim interface for HID operation", call.method)
                             } else {
                                 Thread {
                                     kotlin.run {
@@ -232,17 +232,17 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                                             )
                                             result.success(array.map { it.toUByte().toInt() })
                                         } catch (e: Exception) {
-                                            result.error("error", "error", "error")
+                                            result.error("error", e.message, e.getStackTrace())
                                         }
                                     }
                                 }.start()
                             }
                         }
                     } else {
-                        result.error("error", "error", "error")
+                        result.error("error", "device connection is null", call.method)
                     }
                 } catch (e: Exception) {
-                    result.error("error", "error", "error")
+                    result.error("error", e.message, e.getStackTrace())
                 }
             }
             "close" -> {
@@ -252,7 +252,7 @@ class HidAndroidPlugin : FlutterPlugin, MethodCallHandler {
                     device = null
                     result.success(0)
                 } catch (e: Exception) {
-                    result.error("error", "error", "error")
+                    result.error("error", e.message, e.getStackTrace())
                 }
             }
             else -> result.notImplemented()
