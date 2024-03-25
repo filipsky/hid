@@ -51,6 +51,7 @@ class UsbDevice extends Device {
 
   @override
   Future<bool> open() async {
+    if (_raw != null) throw PlatformException(code: "rawDeviceAlreadyOpen", message: "Pointer to the USB device is not null, device already open");
     final pointer = _api.open(vendorId, productId, serialNumber.toPointer());
     if (pointer.address == nullptr.address) return false;
     final result = _api.set_nonblocking(pointer, 1);
@@ -73,7 +74,7 @@ class UsbDevice extends Device {
   @override
   Stream<Uint8List> read(int length, int duration) async* {
     final raw = _raw;
-    if (raw == null) throw PlatformException(code: "rawDeviceNotOpen", message: "Pointer to the USB device is null, did you forget to clal open?");
+    if (raw == null) throw PlatformException(code: "rawDeviceNotOpen", message: "Pointer to the USB device is null, did you forget to call open?");
     final buf = calloc<Uint8>(length);
     var count = 0;
     while (isOpen) {
@@ -91,7 +92,7 @@ class UsbDevice extends Device {
   @override
   Future<void> write(Uint8List bytes) async {
     final raw = _raw;
-    if (raw == null) throw Exception();
+    if (raw == null) throw PlatformException(code: "rawDeviceNotOpen", message: "Pointer to the USB device is null, did you forget to call open?");
     final buf = calloc<Uint8>(bytes.lengthInBytes);
     final Uint8List _buf = buf.asTypedList(bytes.lengthInBytes);
     _buf.setRange(0, bytes.lengthInBytes, bytes);
@@ -110,7 +111,7 @@ class UsbDevice extends Device {
   @override
   Future<void> setFeature(Uint8List bytes) async {
     final raw = _raw;
-    if (raw == null) throw Exception();
+    if (raw == null) throw PlatformException(code: "rawDeviceNotOpen", message: "Pointer to the USB device is null, did you forget to call open?");
     final buf = calloc<Uint8>(bytes.lengthInBytes);
     final Uint8List _buf = buf.asTypedList(bytes.lengthInBytes);
     _buf.setRange(0, bytes.lengthInBytes, bytes);
@@ -129,7 +130,7 @@ class UsbDevice extends Device {
   @override
   Future<void> getFeature(Uint8List bytes) async {
     final raw = _raw;
-    if (raw == null) throw Exception();
+    if (raw == null) throw PlatformException(code: "rawDeviceNotOpen", message: "Pointer to the USB device is null, did you forget to call open?");
     final buf = calloc<Uint8>(bytes.lengthInBytes);
     var count = 0;
     var offset = 0;
