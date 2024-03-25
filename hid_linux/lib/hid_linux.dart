@@ -130,15 +130,15 @@ class UsbDevice extends Device {
     if (raw == null) throw Exception();
     final buf = calloc<Uint8>(bytes.lengthInBytes);
     var count = 0;
-    var pos = 0;
-    while (isOpen) {
+    var offset = 0;
+    while (isOpen && bytes.lengthInBytes - offset > 0) {
       count = _api.get_feature_report(raw, buf, bytes.lengthInBytes);
       if (count == -1) {
         break;
       } else if (count > 0) {
         final res = buf.asTypedList(count);
         for (var idx = 0; idx < count; idx++) {
-          bytes[pos++] = res[idx];
+          bytes[offset++] = res[idx];
         }
       }
     }
