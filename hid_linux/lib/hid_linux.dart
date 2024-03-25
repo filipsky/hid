@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
+import 'package:flutter/services.dart';
 import 'package:hid_platform_interface/hid_platform_interface.dart';
 
 import 'generated_bindings.dart';
@@ -65,13 +66,14 @@ class UsbDevice extends Device {
     final raw = _raw;
     if (raw != null) {
       _api.close(raw);
+      _raw = null;
     }
   }
 
   @override
   Stream<Uint8List> read(int length, int duration) async* {
     final raw = _raw;
-    if (raw == null) throw Exception();
+    if (raw == null) throw PlatformException(code: "rawDeviceNotOpen", message: "Pointer to the USB device is null, did you forget to clal open?");
     final buf = calloc<Uint8>(length);
     var count = 0;
     while (isOpen) {
